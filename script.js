@@ -266,6 +266,78 @@ nav.style.boxShadow="none";
 
 });
 
+const video = document.getElementById("phoneVideo");
+const canvas = document.getElementById("phoneCanvas");
+
+if(video && canvas){
+
+const ctx = canvas.getContext("2d", {
+willReadFrequently:true
+});
+
+
+video.addEventListener("loadedmetadata",()=>{
+
+canvas.width = video.videoWidth;
+canvas.height = video.videoHeight;
+
+video.play();
+
+removeGreen();
+
+});
+
+
+function removeGreen(){
+
+ctx.drawImage(
+video,
+0,
+0,
+canvas.width,
+canvas.height
+);
+
+
+let frame = ctx.getImageData(
+0,
+0,
+canvas.width,
+canvas.height
+);
+
+
+let data = frame.data;
+
+
+for(let i=0;i<data.length;i+=4){
+
+let r=data[i];
+let g=data[i+1];
+let b=data[i+2];
+
+
+if(
+g > 80 &&
+g > r*1.25 &&
+g > b*1.25
+){
+
+data[i+3]=0;
+
+}
+
+}
+
+
+ctx.putImageData(frame,0,0);
+
+
+requestAnimationFrame(removeGreen);
+
+}
+
+}
 
 
 
