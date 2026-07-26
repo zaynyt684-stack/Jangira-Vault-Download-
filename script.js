@@ -1,160 +1,651 @@
-const API =
-"https://api.github.com/repos/zaynyt684-stack/Jangira-Vault/releases/latest";
+/* ===========================
+   Jangira Vault
+   Apple Inspired Download Page
+=========================== */
 
-async function loadRelease(){
 
-try{
-
-const response=await fetch(API);
-
-if(!response.ok){
-
-throw new Error("Failed");
-
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;
 }
 
-const release=await response.json();
 
-const version=document.getElementById("version");
-const apkSize=document.getElementById("apkSize");
-const releaseDate=document.getElementById("releaseDate");
-const changelog=document.getElementById("changelog");
-const downloadBtn=document.getElementById("downloadBtn");
-
-version.textContent=release.tag_name;
-
-releaseDate.textContent=
-new Date(release.published_at).toLocaleDateString(
-"en-IN",
-{
-day:"numeric",
-month:"long",
-year:"numeric"
-}
-);
-
-changelog.textContent=
-release.body || "No changelog available.";
-
-const apk=
-release.assets.find(asset=>
-asset.name.toLowerCase().endsWith(".apk")
-);
-
-if(apk){
-
-downloadBtn.href=
-apk.browser_download_url;
-
-downloadBtn.target="_blank";
-
-downloadBtn.textContent=
-"Download Latest APK";
-
-apkSize.textContent=
-(apk.size/1024/1024).toFixed(1)+" MB";
-
-}else{
-
-downloadBtn.textContent=
-"APK Not Available";
-
-apkSize.textContent="-";
-
+html{
+scroll-behavior:smooth;
 }
 
-}catch(error){
 
-console.log(error);
+body{
 
-document.getElementById("version").textContent="-";
+background:#f5f5f7;
 
-document.getElementById("apkSize").textContent="-";
+color:#1d1d1f;
 
-document.getElementById("releaseDate").textContent="-";
+overflow-x:hidden;
 
-document.getElementById("changelog").textContent=
-"Unable to load latest release.";
-
-}
-
-}
-
-loadRelease();
-
-
-// Scroll Animation
-
-const observer=new IntersectionObserver(entries=>{
-
-entries.forEach(entry=>{
-
-if(entry.isIntersecting){
-
-entry.target.style.opacity="1";
-
-entry.target.style.transform="translateY(0)";
-
-}
-
-});
-
-},{
-threshold:.15
-});
-
-document.querySelectorAll(
-".info-card,.feature-card,.update-card"
-).forEach(el=>{
-
-el.style.opacity="0";
-
-el.style.transform="translateY(40px)";
-
-el.style.transition=".7s ease";
-
-observer.observe(el);
-
-});
-
-
-// Floating Logo
-
-const logo=document.querySelector(".app-logo");
-
-if(logo){
-
-let t=0;
-
-(function animate(){
-
-t+=0.02;
-
-logo.style.transform=
-`translateY(${Math.sin(t)*7}px)`;
-
-requestAnimationFrame(animate);
-
-})();
+width:100%;
 
 }
 
 
-// Navbar Blur
 
-window.addEventListener("scroll",()=>{
 
-const nav=document.querySelector(".navbar");
+.background{
 
-if(window.scrollY>25){
+position:fixed;
 
-nav.style.boxShadow=
-"0 12px 30px rgba(0,0,0,.08)";
+inset:0;
 
-}else{
+background:
 
-nav.style.boxShadow="none";
+radial-gradient(circle at top,#ffe6a3 0%,transparent 40%),
+
+linear-gradient(#ffffff,#f5f5f7);
+
+z-index:-1;
 
 }
 
-});
+
+
+
+/* ===========================
+Navbar
+=========================== */
+
+
+.navbar{
+
+position:sticky;
+
+top:0;
+
+width:100%;
+
+padding:18px 8%;
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+background:rgba(255,255,255,.72);
+
+backdrop-filter:blur(20px);
+
+border-bottom:1px solid rgba(0,0,0,.05);
+
+z-index:1000;
+
+}
+
+
+
+.logo-area{
+
+display:flex;
+
+align-items:center;
+
+gap:12px;
+
+font-size:22px;
+
+font-weight:700;
+
+}
+
+
+
+.logo-area img{
+
+width:44px;
+
+height:44px;
+
+border-radius:14px;
+
+box-shadow:0 8px 25px rgba(0,0,0,.12);
+
+}
+
+
+
+
+.nav-link{
+
+text-decoration:none;
+
+color:white;
+
+background:#d4af37;
+
+padding:13px 24px;
+
+border-radius:999px;
+
+font-weight:700;
+
+transition:.35s;
+
+}
+
+
+
+.nav-link:hover{
+
+transform:translateY(-3px);
+
+box-shadow:0 15px 35px rgba(212,175,55,.35);
+
+}
+
+
+
+
+
+/* ===========================
+Hero
+=========================== */
+
+
+.hero{
+
+min-height:92vh;
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+padding:70px 25px;
+
+text-align:center;
+
+width:100%;
+
+}
+
+
+
+.hero-content{
+
+max-width:900px;
+
+width:100%;
+
+margin:auto;
+
+}
+
+
+
+.app-logo{
+
+width:140px;
+
+border-radius:34px;
+
+box-shadow:0 25px 70px rgba(0,0,0,.12);
+
+margin-bottom:30px;
+
+}
+
+
+
+.latest-badge{
+
+display:inline-block;
+
+padding:10px 20px;
+
+border-radius:999px;
+
+background:#fff6d7;
+
+color:#9b7600;
+
+font-weight:700;
+
+margin-bottom:28px;
+
+}
+
+
+
+
+.hero h1{
+
+font-size:68px;
+
+line-height:1.05;
+
+font-weight:800;
+
+letter-spacing:-2px;
+
+margin-bottom:25px;
+
+}
+
+
+
+.hero p{
+
+font-size:22px;
+
+line-height:1.8;
+
+color:#6e6e73;
+
+max-width:760px;
+
+margin:auto;
+
+}
+
+
+
+
+.hero-buttons{
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+gap:18px;
+
+margin-top:45px;
+
+flex-wrap:wrap;
+
+}
+
+
+
+
+.primary-button,
+.secondary-button{
+
+padding:18px 34px;
+
+border-radius:999px;
+
+text-decoration:none;
+
+font-size:17px;
+
+font-weight:700;
+
+transition:.35s;
+
+display:inline-block;
+
+}
+
+
+
+.primary-button{
+
+background:#d4af37;
+
+color:white;
+
+}
+
+
+
+.secondary-button{
+
+background:white;
+
+color:#111;
+
+border:1px solid rgba(0,0,0,.08);
+
+}
+
+
+
+.primary-button:hover,
+.secondary-button:hover{
+
+transform:translateY(-5px);
+
+box-shadow:0 20px 40px rgba(0,0,0,.12);
+
+}
+
+
+
+
+
+/* ===========================
+Info Cards
+=========================== */
+
+
+.info-section{
+
+max-width:1200px;
+
+margin:auto;
+
+padding:30px 8% 100px;
+
+display:grid;
+
+grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+
+gap:24px;
+
+}
+
+
+
+.info-card{
+
+background:rgba(255,255,255,.72);
+
+backdrop-filter:blur(25px);
+
+border-radius:30px;
+
+padding:35px;
+
+text-align:center;
+
+box-shadow:0 15px 40px rgba(0,0,0,.08);
+
+transition:.35s;
+
+}
+
+
+
+.info-card:hover{
+
+transform:translateY(-8px);
+
+}
+
+
+
+.info-card h3{
+
+font-size:17px;
+
+color:#6e6e73;
+
+margin-bottom:15px;
+
+}
+
+
+
+.info-card h2{
+
+font-size:30px;
+
+font-weight:800;
+
+}
+
+
+
+
+
+/* ===========================
+Features
+=========================== */
+
+
+.features{
+
+padding:100px 8%;
+
+width:100%;
+
+}
+
+
+
+.features h2{
+
+text-align:center;
+
+font-size:52px;
+
+margin-bottom:60px;
+
+}
+
+
+
+
+.feature-grid{
+
+display:grid;
+
+grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+
+gap:28px;
+
+max-width:1200px;
+
+margin:auto;
+
+}
+
+
+
+.feature-card{
+
+background:white;
+
+border-radius:30px;
+
+padding:38px;
+
+text-align:center;
+
+box-shadow:0 15px 35px rgba(0,0,0,.08);
+
+transition:.35s;
+
+}
+
+
+
+.feature-card:hover{
+
+transform:translateY(-10px);
+
+}
+
+
+
+.feature-card div{
+
+font-size:44px;
+
+}
+
+
+
+.feature-card h3{
+
+margin:18px 0;
+
+font-size:24px;
+
+}
+
+
+
+.feature-card p{
+
+font-size:17px;
+
+line-height:1.7;
+
+color:#6e6e73;
+
+}
+
+
+
+
+
+/* ===========================
+Updates
+=========================== */
+
+
+.updates{
+
+padding:90px 8%;
+
+}
+
+
+
+.updates h2{
+
+text-align:center;
+
+font-size:48px;
+
+margin-bottom:45px;
+
+}
+
+
+
+.update-card{
+
+background:white;
+
+border-radius:30px;
+
+padding:40px;
+
+box-shadow:0 15px 35px rgba(0,0,0,.08);
+
+max-width:1000px;
+
+margin:auto;
+
+}
+
+
+
+#changelog{
+
+white-space:pre-wrap;
+
+font-family:inherit;
+
+font-size:17px;
+
+line-height:1.9;
+
+color:#555;
+
+}
+
+
+
+
+
+/* ===========================
+Footer
+=========================== */
+
+
+footer{
+
+padding:80px 20px;
+
+text-align:center;
+
+}
+
+
+
+.footer-logo{
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+gap:16px;
+
+margin-bottom:18px;
+
+}
+
+
+
+.footer-logo img{
+
+width:54px;
+
+border-radius:16px;
+
+}
+
+
+
+.footer-links{
+
+display:flex;
+
+justify-content:center;
+
+gap:28px;
+
+margin:30px 0;
+
+flex-wrap:wrap;
+
+}
+
+
+
+.footer-links a{
+
+text-decoration:none;
+
+color:#555;
+
+font-weight:600;
+
+}
+
+
+
+.footer-links a:hover{
+
+color:#d4af37;
+
+}
+
+
+
+.copyright{
+
+color:#8a8a8a;
+
+font-size:15px;
+
+  }
