@@ -1,16 +1,98 @@
-// Premium Scroll Reveal
+const API =
+"https://api.github.com/repos/zaynyt684-stack/Jangira-Vault/releases/latest";
 
-const revealElements = document.querySelectorAll(
-".hero,.info-card,.feature-card"
+async function loadRelease(){
+
+try{
+
+const response=await fetch(API);
+
+if(!response.ok){
+
+throw new Error("Failed");
+
+}
+
+const release=await response.json();
+
+const version=document.getElementById("version");
+const apkSize=document.getElementById("apkSize");
+const releaseDate=document.getElementById("releaseDate");
+const changelog=document.getElementById("changelog");
+const downloadBtn=document.getElementById("downloadBtn");
+
+version.textContent=release.tag_name;
+
+releaseDate.textContent=
+new Date(release.published_at).toLocaleDateString(
+"en-IN",
+{
+day:"numeric",
+month:"long",
+year:"numeric"
+}
 );
 
-const observer = new IntersectionObserver((entries)=>{
+changelog.textContent=
+release.body || "No changelog available.";
+
+const apk=
+release.assets.find(asset=>
+asset.name.toLowerCase().endsWith(".apk")
+);
+
+if(apk){
+
+downloadBtn.href=
+apk.browser_download_url;
+
+downloadBtn.target="_blank";
+
+downloadBtn.textContent=
+"Download Latest APK";
+
+apkSize.textContent=
+(apk.size/1024/1024).toFixed(1)+" MB";
+
+}else{
+
+downloadBtn.textContent=
+"APK Not Available";
+
+apkSize.textContent="-";
+
+}
+
+}catch(error){
+
+console.log(error);
+
+document.getElementById("version").textContent="-";
+
+document.getElementById("apkSize").textContent="-";
+
+document.getElementById("releaseDate").textContent="-";
+
+document.getElementById("changelog").textContent=
+"Unable to load latest release.";
+
+}
+
+}
+
+loadRelease();
+
+
+// Scroll Animation
+
+const observer=new IntersectionObserver(entries=>{
 
 entries.forEach(entry=>{
 
 if(entry.isIntersecting){
 
 entry.target.style.opacity="1";
+
 entry.target.style.transform="translateY(0)";
 
 }
@@ -21,11 +103,15 @@ entry.target.style.transform="translateY(0)";
 threshold:.15
 });
 
-revealElements.forEach(el=>{
+document.querySelectorAll(
+".info-card,.feature-card,.update-card"
+).forEach(el=>{
 
 el.style.opacity="0";
+
 el.style.transform="translateY(40px)";
-el.style.transition="all .8s ease";
+
+el.style.transition=".7s ease";
 
 observer.observe(el);
 
@@ -36,19 +122,22 @@ observer.observe(el);
 
 const logo=document.querySelector(".app-logo");
 
+if(logo){
+
 let t=0;
 
-function floatLogo(){
+(function animate(){
 
 t+=0.02;
 
-logo.style.transform=`translateY(${Math.sin(t)*8}px)`;
+logo.style.transform=
+`translateY(${Math.sin(t)*7}px)`;
 
-requestAnimationFrame(floatLogo);
+requestAnimationFrame(animate);
+
+})();
 
 }
-
-floatLogo();
 
 
 // Navbar Blur
@@ -57,66 +146,15 @@ window.addEventListener("scroll",()=>{
 
 const nav=document.querySelector(".navbar");
 
-if(window.scrollY>30){
+if(window.scrollY>25){
 
-nav.style.background="rgba(255,255,255,.82)";
-nav.style.boxShadow="0 15px 40px rgba(0,0,0,.08)";
+nav.style.boxShadow=
+"0 12px 30px rgba(0,0,0,.08)";
 
 }else{
 
-nav.style.background="rgba(255,255,255,.65)";
 nav.style.boxShadow="none";
 
 }
 
 });
-
-
-// Button Ripple
-
-document.querySelectorAll("a").forEach(button=>{
-
-button.addEventListener("click",function(e){
-
-const ripple=document.createElement("span");
-
-const size=Math.max(this.clientWidth,this.clientHeight);
-
-ripple.style.width=size+"px";
-ripple.style.height=size+"px";
-
-ripple.style.position="absolute";
-ripple.style.borderRadius="50%";
-ripple.style.background="rgba(255,255,255,.45)";
-ripple.style.transform="scale(0)";
-ripple.style.left=e.offsetX-size/2+"px";
-ripple.style.top=e.offsetY-size/2+"px";
-ripple.style.pointerEvents="none";
-ripple.style.animation="ripple .6s linear";
-
-this.style.position="relative";
-this.style.overflow="hidden";
-
-this.appendChild(ripple);
-
-setTimeout(()=>{
-
-ripple.remove();
-
-},600);
-
-});
-
-});
-
-
-// Smooth Loading
-
-window.addEventListener("load",()=>{
-
-document.body.style.opacity="1";
-
-});
-
-document.body.style.opacity="0";
-document.body.style.transition="opacity .7s ease";
